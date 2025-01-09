@@ -80,7 +80,8 @@ export class RoleService {
   async getAllRolesWithStaff() {
     try {
       const query = await this.roleQueries.getAllRolesWithStaff();
-      return await this.roleModel.aggregate(query);
+      const data = await this.roleModel.aggregate(query);
+      return handleResponse('Role fetch successfully.', data);
     } catch (error) {
       throw new InternalServerErrorException(error.message);
     }

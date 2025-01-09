@@ -2,8 +2,8 @@ export namespace App_Permissions {
   // Role module permission
   export const Role = {
     ADD: '6779a3236c8e177d1119eb51',
-    EDIT: 'user_edit',
-    READ: 'user_edit',
+    EDIT: '6779a32e6c8e177d1119eb54',
+    READ: '67802898f22c8908ac00407c',
   } as const;
 
   // Staff module permission
