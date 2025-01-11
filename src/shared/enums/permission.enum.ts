@@ -11,6 +11,7 @@ export namespace App_Permissions {
     ADD: 'user_add',
     EDIT: 'user_edit',
     RESET_PASSWORD: 'sacs',
+    READ: '67802898f22c8908ac00407c',
   } as const;
 
   // User module permission

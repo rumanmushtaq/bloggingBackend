@@ -1,5 +1,6 @@
 // ** Nest
 import {
+  BadRequestException,
   ForbiddenException,
   Injectable,
   UnauthorizedException,
@@ -47,9 +48,14 @@ export class StaffJwtStrategy extends PassportStrategy(
 
     if (!staff || !isSession) throw new UnauthorizedException();
 
+    if (staff.isBlocked)
+      throw new BadRequestException(
+        'This account is currently blocked. Please contact the administrator.',
+      );
+
     if (!staff?.role)
       throw new ForbiddenException(
-        'You have not been assigned any role. Please contact the administrator',
+        'You have not been assigned any role. Please contact the administrator.',
       );
 
     return staff;

@@ -43,10 +43,16 @@ export class RoleController {
     return await this.roleService.update(roleId, body);
   }
 
-  @ApiOperation({ summary: 'Get all roles.' })
+  @ApiOperation({ summary: 'Get all roles with staff.' })
   @Permissions(App_Permissions.Role.READ)
-  @Get()
+  @Get('with-staffs')
   async getAllRolesWithStaff() {
     return await this.roleService.getAllRolesWithStaff();
+  }
+
+  @ApiOperation({ summary: 'Get all roles.' })
+  @Get('all')
+  async getAllRoles() {
+    return await this.roleService.getAllRoles();
   }
 }

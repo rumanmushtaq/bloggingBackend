@@ -1,4 +1,5 @@
 import mongoose from 'mongoose';
+import { StaffEntity } from 'src/app/staff/staff.entity';
 import { UserEntity } from 'src/app/user/user.entity';
 
 export interface IAccessTokenPayload {
@@ -8,3 +9,4 @@ export interface IAccessTokenPayload {
 }
 
 export type IAuthenticatedUser = UserEntity & mongoose.Document;
+export type IAuthenticatedStaff = StaffEntity & mongoose.Document;
