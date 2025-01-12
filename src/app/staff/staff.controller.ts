@@ -57,7 +57,9 @@ export class StaffController {
   @ApiOperation({ summary: 'Get all staffs excluding the logged-in staff' })
   @Permissions(App_Permissions.Staff.READ)
   @Get('others')
-  async getAllOtherStaffs(@Req() req, @Query() query: GetAllOtherStaffDto) {}
+  async getAllOtherStaffs(@Req() req, @Query() query: GetAllOtherStaffDto) {
+    return await this.staffService.getAllOtherStaffs(req.user, query);
+  }
 
   @ApiOperation({ summary: 'Reset the password of a staff member.' })
   @Permissions(App_Permissions.Staff.RESET_PASSWORD)

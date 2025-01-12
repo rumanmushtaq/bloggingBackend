@@ -8,8 +8,8 @@ export namespace App_Permissions {
 
   // Staff module permission
   export const Staff = {
-    ADD: 'user_add',
-    EDIT: 'user_edit',
+    ADD: '67797ee5a89a546b8e274dbb',
+    EDIT: '67797f17a89a546b8e274dc1',
     RESET_PASSWORD: 'sacs',
     READ: '67802898f22c8908ac00407c',
   } as const;

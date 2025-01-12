@@ -4,7 +4,7 @@ import {
   OmitType,
   PickType,
 } from '@nestjs/swagger';
-import { Type } from 'class-transformer';
+import { Transform, Type } from 'class-transformer';
 import { IsBoolean, IsMongoId, IsNotEmpty, IsOptional } from 'class-validator';
 import { CreateUserDto } from 'src/app/user/dtos/user-request.dto';
 import { PaginationDto } from 'src/shared/dtos/pagination.dto';
@@ -31,15 +31,20 @@ export class ResetStaffPasswordDto extends PickType(CreateUserDto, [
 
 export class GetAllOtherStaffDto extends PaginationDto {
   @ApiPropertyOptional()
-  name: string;
+  @IsOptional()
+  name?: string;
 
   @ApiPropertyOptional()
+  @IsOptional()
   @IsMongoId()
-  role: string;
+  role?: string;
 
   @ApiPropertyOptional()
   @IsOptional()
   @IsBoolean()
   @Type(() => Boolean)
-  isBlocked: boolean;
+  @Transform(({ value }) => {
+    return value === 'true';
+  })
+  isBlocked?: boolean;
 }

@@ -52,17 +52,20 @@ export class StaffService {
   // Update staff
   async update(staffId: string, body: UpdateStaffDto) {
     try {
-      const staff = await this.staffModel.findOneAndUpdate(
-        { _id: staffId },
-        {
-          $set: {
-            name: body.name,
-            email: body.email,
-            role: body.role,
+      const staff = await this.staffModel
+        .findOneAndUpdate(
+          { _id: staffId },
+          {
+            $set: {
+              name: body.name,
+              email: body.email,
+              role: body.role,
+            },
           },
-        },
-        { new: true },
-      );
+          { new: true },
+        )
+        .populate('role')
+        .select('-password');
 
       if (!staff) throw new NotFoundException('Staff does not exist.');
 
@@ -108,15 +111,20 @@ export class StaffService {
         ...(query.role && {
           role: new mongoose.Types.ObjectId(query.role) as any,
         }),
-        ...(query.isBlocked && {
-          isBlocked: Boolean(query.isBlocked),
-        }),
+        isBlocked: query.isBlocked,
       };
 
       const finalQuery = await this.staffQueries.findStaffWithRole(criteria);
 
       const staffs = await this.staffModel
-        .aggregate(finalQuery)
+        .aggregate([
+          ...finalQuery,
+          {
+            $project: {
+              password: 0,
+            },
+          },
+        ])
         .sort({ createdAt: -1 })
         .skip(_skip)
         .limit(_limit);

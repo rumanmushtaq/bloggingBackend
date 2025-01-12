@@ -15,6 +15,13 @@ export class RoleQueries {
           localField: '_id',
           foreignField: 'role',
           as: 'staffs',
+          pipeline: [
+            {
+              $project: {
+                password: 0,
+              },
+            },
+          ],
         },
       },
       {
