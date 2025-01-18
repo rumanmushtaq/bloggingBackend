@@ -27,9 +27,6 @@ export class BlogEntity {
   })
   category: mongoose.Schema.Types.ObjectId;
 
-  @Prop({ type: Boolean, default: true })
-  isActive: boolean;
-
   @Prop({ type: Boolean, default: false })
   isDeleted: boolean;
 }

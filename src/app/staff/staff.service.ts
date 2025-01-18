@@ -6,7 +6,7 @@ import {
   NotFoundException,
 } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
-import mongoose, { Model, ObjectId } from 'mongoose';
+import mongoose, { FilterQuery, Model, ObjectId } from 'mongoose';
 
 // ** Entities
 import { StaffDocument, StaffEntity } from './staff.entity';
@@ -148,7 +148,7 @@ export class StaffService {
   }
 
   // Find Staff By Criteria
-  async findStaffByCriteria(criteria: Partial<StaffDocument>) {
+  async findStaffByCriteria(criteria: FilterQuery<StaffDocument>) {
     return await this.staffModel.findOne(criteria);
   }
 }

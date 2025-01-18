@@ -9,7 +9,7 @@ export class CategoryEntity {
   @Prop({ type: String, required: true })
   title: string;
 
-  @Prop({ type: Boolean, default: true })
+  @Prop({ type: Boolean, required: true })
   isActive: boolean;
 }
 
