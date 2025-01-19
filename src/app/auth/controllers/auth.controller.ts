@@ -49,6 +49,7 @@ export class AuthController {
     @Body() body: LoginDto,
     @IpAndDevice() ipAndDevice: IpAndDevicePayload,
   ) {
+    
     return await this.authService.login(ipAndDevice, req.site, body);
   }
 

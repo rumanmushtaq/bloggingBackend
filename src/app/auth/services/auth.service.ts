@@ -34,6 +34,7 @@ import { HashService } from 'src/shared/services/hash.service';
 import { SessionHistoryService } from './session-history.service';
 import { StaffService } from 'src/app/staff/staff.service';
 import { PermissionService } from 'src/app/permission/permission.service';
+import { EmailService } from './email.service';
 
 @Injectable()
 export class AuthService {
@@ -45,6 +46,7 @@ export class AuthService {
     private readonly sessionHistoryService: SessionHistoryService,
     private readonly staffService: StaffService,
     private readonly permissionService: PermissionService,
+    private readonly emailService: EmailService,
   ) {}
 
   //  Login
@@ -55,21 +57,20 @@ export class AuthService {
   ) {
     try {
       const { password, email } = body;
-
       const user = await this.userService.findUserByCriteria({
         email,
         site: site?._id,
       });
 
       if (!user) throw new BadRequestException('Email or Password is invalid.');
-
       const matchPassword = await this.hashService.checkPassword(
         password,
         user.password,
       );
 
-      if (!matchPassword)
+      if (!matchPassword) {
         throw new BadRequestException('Email or Password is invalid.');
+      }
 
       // Check if the user's email is verified
       if (!user.isEmailVerified) {
@@ -90,7 +91,14 @@ export class AuthService {
         user: new UserloginResponse(user),
       });
     } catch (error) {
-      throw new InternalServerErrorException(error.message);
+
+      if (error instanceof BadRequestException) {
+        // Ensure bad request errors return the proper status (400)
+        throw error;
+      }
+
+      // For other errors, log and re-throw as an internal server error (500)
+      throw new InternalServerErrorException('An unexpected error occurred.');
     }
   }
 
@@ -146,11 +154,11 @@ export class AuthService {
   async verifyOtp(site: SiteDocument, body: VerifyOtpDto) {
     try {
       const { email, otp } = body;
-
       const isOtpExists = await this.otpService.findOtpByCriteria({
         email,
         otp,
       });
+
 
       if (!isOtpExists) throw new NotFoundException('Invalid OTP');
 
@@ -158,6 +166,8 @@ export class AuthService {
         email,
         site: site?._id,
       });
+
+
 
       if (!user) throw new NotFoundException('User does not exist.');
 
@@ -175,8 +185,8 @@ export class AuthService {
 
         return handleResponse('Otp verified Successfully.');
       } else {
-        const authToken = await this.jwtService.sign(body.email);
 
+        const authToken = await this.jwtService.sign({ email: body.email });;
         return handleResponse('Otp verified Successfully.', {
           authToken,
         });

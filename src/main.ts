@@ -11,6 +11,14 @@ import { ConfigInterface } from './config/config.interface';
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
 
+  // Enable CORS
+  app.enableCors({
+    origin: 'http://localhost:3000', // Replace with your frontend's URL
+    methods: 'GET,POST,PUT,DELETE,OPTIONS',
+    allowedHeaders:
+      'Content-Type, Authorization, x-site-id, x-client-device,x-client-ip ',
+  });
+
   const configService = app.get<ConfigService<ConfigInterface>>(ConfigService);
 
   // Validation pipes

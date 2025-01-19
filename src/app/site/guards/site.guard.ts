@@ -19,6 +19,7 @@ export class SiteGuard implements CanActivate {
 
       if (!siteId)
         throw new BadRequestException('x-site-id is required in header');
+      
 
       const site = await this.siteService.findSiteByCriteria({ _id: siteId });
 

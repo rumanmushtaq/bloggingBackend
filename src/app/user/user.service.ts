@@ -63,6 +63,6 @@ export class UserService {
 
   // Find User By Criteria
   async findUserByCriteria(criteria: Partial<UserDocument>) {
-    return await this.userModel.findOne(criteria);
+    return await this.userModel.findOne(criteria).select('+password');
   }
 }
