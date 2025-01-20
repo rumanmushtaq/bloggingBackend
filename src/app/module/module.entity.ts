@@ -10,7 +10,10 @@ export class ModuleEntity {
   title: string;
 
   @Prop({ type: String, required: true })
-  url: string;
+  path: string;
+
+  @Prop({ type: String, required: true })
+  icon: string;
 
   @Prop({ type: Boolean, default: true })
   isActive: boolean;

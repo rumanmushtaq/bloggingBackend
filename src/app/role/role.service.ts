@@ -62,7 +62,7 @@ export class RoleService {
       if (duplicateRole)
         throw new ConflictException('Role with this title already exists.');
 
-      await this.roleModel.findByIdAndUpdate(
+      const updateRole = await this.roleModel.findByIdAndUpdate(
         roleId,
         {
           $set: body,
@@ -70,17 +70,35 @@ export class RoleService {
         { new: true },
       );
 
-      return handleResponse('Role updated successfully.');
+      return handleResponse('Role updated successfully.', updateRole);
+    } catch (error) {
+      throw new InternalServerErrorException(error.message);
+    }
+  }
+
+  // get all roles with staff
+  async getAllRolesWithStaff() {
+    try {
+      const query = await this.roleQueries.getAllRolesWithStaff();
+      const data = await this.roleModel
+        .aggregate(query)
+        .sort({ createdAt: -1 });
+      return handleResponse('Role fetch successfully.', data);
     } catch (error) {
       throw new InternalServerErrorException(error.message);
     }
   }
 
   // get all roles
-  async getAllRolesWithStaff() {
+  async getAllRoles() {
     try {
-      const query = await this.roleQueries.getAllRolesWithStaff();
-      return await this.roleModel.aggregate(query);
+      const data = await this.roleModel
+        .find({
+          isAdmin: false,
+        })
+        .select('-isAdmin');
+
+      return handleResponse('Role fetch successfully.', data);
     } catch (error) {
       throw new InternalServerErrorException(error.message);
     }

@@ -1,5 +1,15 @@
 // ** Nest
-import { Body, Controller, Param, Post, Put, UseGuards } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Get,
+  Param,
+  Post,
+  Put,
+  Query,
+  Req,
+  UseGuards,
+} from '@nestjs/common';
 import { ApiBearerAuth, ApiOperation, ApiTags } from '@nestjs/swagger';
 import { ObjectId } from 'mongoose';
 
@@ -12,6 +22,7 @@ import { App_Permissions } from 'src/shared/enums/permission.enum';
 import { Permissions } from 'src/shared/decorators/permission.decorator';
 import {
   CreateStaffDto,
+  GetAllOtherStaffDto,
   ResetStaffPasswordDto,
   UpdateStaffDto,
 } from './dtos/staff-request.dto';
@@ -41,6 +52,13 @@ export class StaffController {
     @Body() body: UpdateStaffDto,
   ) {
     return await this.staffService.update(staffId, body);
+  }
+
+  @ApiOperation({ summary: 'Get all staffs excluding the logged-in staff' })
+  @Permissions(App_Permissions.Staff.READ)
+  @Get('others')
+  async getAllOtherStaffs(@Req() req, @Query() query: GetAllOtherStaffDto) {
+    return await this.staffService.getAllOtherStaffs(req.user, query);
   }
 
   @ApiOperation({ summary: 'Reset the password of a staff member.' })

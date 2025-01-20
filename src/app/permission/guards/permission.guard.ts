@@ -20,7 +20,7 @@ export class PermissionsGuard implements CanActivate {
       context.getHandler(),
     );
 
-    if (!requiredPermissions) {
+    if (!requiredPermissions || requiredPermissions.length === 0) {
       return true;
     }
 
@@ -39,7 +39,7 @@ export class PermissionsGuard implements CanActivate {
     const staffPermissions = staff.role.permissions || [];
 
     const staffPermissionSet = new Set(staffPermissions?.map(String));
-    const hasPermission = requiredPermissions?.every((permission) =>
+    const hasPermission = requiredPermissions?.some((permission) =>
       staffPermissionSet?.has(permission),
     );
 

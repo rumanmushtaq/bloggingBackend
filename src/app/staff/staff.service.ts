@@ -6,7 +6,7 @@ import {
   NotFoundException,
 } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
-import { Model, ObjectId } from 'mongoose';
+import mongoose, { FilterQuery, Model, ObjectId } from 'mongoose';
 
 // ** Entities
 import { StaffDocument, StaffEntity } from './staff.entity';
@@ -17,10 +17,12 @@ import { StaffQueries } from './staff.query';
 // ** DTOS & Types
 import {
   CreateStaffDto,
+  GetAllOtherStaffDto,
   ResetStaffPasswordDto,
   UpdateStaffDto,
 } from './dtos/staff-request.dto';
 import { handleResponse } from 'src/utils/response-handler';
+import { IAuthenticatedStaff } from 'src/shared/interfaces/auth.interface';
 
 @Injectable()
 export class StaffService {
@@ -50,17 +52,20 @@ export class StaffService {
   // Update staff
   async update(staffId: string, body: UpdateStaffDto) {
     try {
-      const staff = await this.staffModel.findOneAndUpdate(
-        { _id: staffId },
-        {
-          $set: {
-            name: body.name,
-            email: body.email,
-            role: body.role,
+      const staff = await this.staffModel
+        .findOneAndUpdate(
+          { _id: staffId },
+          {
+            $set: {
+              name: body.name,
+              email: body.email,
+              role: body.role,
+            },
           },
-        },
-        { new: true },
-      );
+          { new: true },
+        )
+        .populate('role')
+        .select('-password');
 
       if (!staff) throw new NotFoundException('Staff does not exist.');
 
@@ -88,6 +93,53 @@ export class StaffService {
     }
   }
 
+  // Get all  others staff
+  async getAllOtherStaffs(
+    staff: IAuthenticatedStaff,
+    query: GetAllOtherStaffDto,
+  ) {
+    try {
+      const _page = query.page;
+      const _limit = query.limit;
+      const _skip = _page * _limit;
+
+      const criteria = {
+        _id: { $ne: new mongoose.Types.ObjectId(staff._id?.toString()) } as any,
+        ...(query.name && {
+          name: { $regex: new RegExp(query.name, 'i') } as any,
+        }),
+        ...(query.role && {
+          role: new mongoose.Types.ObjectId(query.role) as any,
+        }),
+        isBlocked: query.isBlocked,
+      };
+
+      const finalQuery = await this.staffQueries.findStaffWithRole(criteria);
+
+      const staffs = await this.staffModel
+        .aggregate([
+          ...finalQuery,
+          {
+            $project: {
+              password: 0,
+            },
+          },
+        ])
+        .sort({ createdAt: -1 })
+        .skip(_skip)
+        .limit(_limit);
+
+      const totalCount = await this.staffModel.countDocuments(criteria);
+
+      return handleResponse('Get others Staffs list.', {
+        staffs,
+        total: totalCount,
+      });
+    } catch (error) {
+      throw new InternalServerErrorException(error.message);
+    }
+  }
+
   // Find staff with role
   async findStaffWithRole(criteria: Partial<StaffDocument>) {
     const query = await this.staffQueries.findStaffWithRole(criteria);
@@ -96,7 +148,7 @@ export class StaffService {
   }
 
   // Find Staff By Criteria
-  async findStaffByCriteria(criteria: Partial<StaffDocument>) {
+  async findStaffByCriteria(criteria: FilterQuery<StaffDocument>) {
     return await this.staffModel.findOne(criteria);
   }
 }

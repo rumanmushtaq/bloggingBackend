@@ -8,7 +8,12 @@ export class CreateModuleDto {
   title: string;
 
   @ApiProperty()
-  @IsNotEmpty({ message: 'Url is required' })
+  @IsNotEmpty({ message: 'Path is required' })
   @IsString()
-  url: string;
+  path: string;
+
+  @ApiProperty()
+  @IsNotEmpty({ message: 'Icon is required' })
+  @IsString()
+  icon: string;
 }

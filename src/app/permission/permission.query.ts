@@ -16,6 +16,7 @@ export class PermissionQueries {
       {
         $group: {
           _id: '$module',
+          action: { $push: '$_id' },
         },
       },
       {
@@ -28,7 +29,8 @@ export class PermissionQueries {
             {
               $project: {
                 title: 1,
-                url: 1,
+                path: 1,
+                icon: 1,
                 isActive: 1,
               },
             },
@@ -38,6 +40,11 @@ export class PermissionQueries {
       {
         $unwind: {
           path: '$moduledetail',
+        },
+      },
+      {
+        $addFields: {
+          'moduledetail.action': '$action',
         },
       },
       {
