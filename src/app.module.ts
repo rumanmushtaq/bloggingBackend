@@ -13,6 +13,8 @@ import { UserModule } from './app/user/user.module';
 import { ConfigModule } from './config/config.module';
 import { DatabaseModule } from './database/database.module';
 import { SharedModule } from './shared/shared.module';
+import { ServeStaticModule } from '@nestjs/serve-static';
+import { join } from 'path';
 
 @Module({
   imports: [
@@ -28,6 +30,9 @@ import { SharedModule } from './shared/shared.module';
     CategoryModule,
     StaffModule,
     SiteModule,
+    ServeStaticModule.forRoot({
+      rootPath: join(__dirname, '..', 'public'), // ensure 'public' directory exists here
+    }),
   ],
   controllers: [AppController],
   providers: [AppService],
