@@ -29,13 +29,13 @@ export class EmailService {
       const { name, to, subject, otp } = payload;
 
       // get opt email template
-      const otpEmailTemplate = OtpEmailTemplate(name, otp);
+      const otpEmailTemplatev = OtpEmailTemplate(name, otp);
 
       // send email
       await this.sendEmail({
         to,
         subject,
-        html: otpEmailTemplate,
+        html: otpEmailTemplatev,
       });
     } catch (error) {
       throw new InternalServerErrorException(error.message);
